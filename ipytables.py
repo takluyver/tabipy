@@ -22,6 +22,9 @@ class TableCell(object):
         if style:
             attrs.append('style="%s"'%style)
         return "<%s %s>%s</%s>"% (tag, ' '.join(attrs), self.value, tag)
+
+    def _repr_latex_(self):
+        return unicode(self.value)
     
 class TableRow(object):
     def  __init__(self, *cells):
@@ -33,15 +36,24 @@ class TableRow(object):
         if not isinstance(c, TableCell):
             c = TableCell(c)
         self.cells.append(c)
+
+    def column_count(self):
+        return len(self.cells)
     
     def _repr_html_(self):
         return '<tr>' + ''.join(c._repr_html_() for c in self.cells) + '</tr>'
+
+    def _repr_latex_(self):
+        return ' & '.join(c._repr_latex_() for c in self.cells) + '\\\\\n'
 
 class TableHeaderRow(TableRow):
     def append_cell(self, c):
         if not isinstance(c, TableCell):
             c = TableCell(c, header=True)
         self.cells.append(c)
+
+    def _repr_latex_(self):
+        return super(TableHeaderRow, self)._repr_latex_() + '\\hline\n'
 
 class Table(object):
     def __init__(self, *rows):
@@ -56,3 +68,10 @@ class Table(object):
     
     def _repr_html_(self):
         return '<table>\n' + '\n'.join(r._repr_html_() for r in self.rows) + '\n</table>'
+
+    def _repr_latex_(self):
+        return '\\begin{tabular}{*{%d}{l}} \\hline\n' % max(row.column_count() 
+                                                                for row in
+                                                                self.rows) + \
+                '\n'.join(r._repr_latex_() for r in self.rows) + \
+                '\\hline\n\\end{tabular}'
