@@ -1,3 +1,6 @@
+import sys
+PY3 = sys.version_info[0] >= 3
+
 class TableCell(object):
     bg_colour = None
     
@@ -24,7 +27,7 @@ class TableCell(object):
         return "<%s %s>%s</%s>"% (tag, ' '.join(attrs), self.value, tag)
 
     def _repr_latex_(self):
-        return unicode(self.value)
+        return (str if PY3 else unicode)(self.value)
     
 class TableRow(object):
     def  __init__(self, *cells):
