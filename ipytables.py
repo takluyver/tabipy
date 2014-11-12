@@ -28,9 +28,13 @@ class TableCell(object):
     
 class TableRow(object):
     def  __init__(self, *cells):
+        self.parent = None
         self.cells = []
         for c in cells:
             self.append_cell(c)
+
+    def set_parent(self, parent):
+        self.parent = parent
             
     def append_cell(self, c):
         if not isinstance(c, TableCell):
@@ -52,26 +56,32 @@ class TableHeaderRow(TableRow):
             c = TableCell(c, header=True)
         self.cells.append(c)
 
+    def set_parent(self, parent):
+        super(TableHeaderRow, self).set_parent(parent)
+        self.parent.has_header = True
+
     def _repr_latex_(self):
         return super(TableHeaderRow, self)._repr_latex_() + '\\hline\n'
 
 class Table(object):
     def __init__(self, *rows):
         self.rows = []
+        self.has_header = False
         for r in rows:
             self.append_row(r)
     
     def append_row(self, r):
         if not isinstance(r, TableRow):
             r = TableRow(*r)
+        r.set_parent(self)
         self.rows.append(r)
     
     def _repr_html_(self):
         return '<table>\n' + '\n'.join(r._repr_html_() for r in self.rows) + '\n</table>'
 
     def _repr_latex_(self):
-        return '\\begin{tabular}{*{%d}{l}} \\hline\n' % max(row.column_count() 
-                                                                for row in
-                                                                self.rows) + \
-                '\n'.join(r._repr_latex_() for r in self.rows) + \
-                '\\hline\n\\end{tabular}'
+        out = '\n'.join(r._repr_latex_() for r in self.rows)
+        if self.has_header:
+            out = '\\hline\n' + out + '\\hline\n'
+        return '\\begin{tabular}{*{%d}{l}}\n%s\\end{tabular}' % \
+                        (max(row.column_count() for row in self.rows), out)
