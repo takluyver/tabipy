@@ -1,6 +1,9 @@
 import sys
 PY3 = sys.version_info[0] >= 3
 
+from itertools import izip_longest
+from collections import Mapping
+
 class TableCell(object):
     bg_colour = None
     
@@ -70,6 +73,15 @@ class Table(object):
     def __init__(self, *rows):
         self.rows = []
         self.has_header = False
+
+        # if argument is a single dict, convert it to a table with keys
+        # as header
+        if (len(rows) == 1) and isinstance(rows[0], Mapping):
+            dict_arg = rows[0]
+            new_rows = [TableHeaderRow(*dict_arg.keys())]
+            new_rows.extend(izip_longest(*dict_arg.values(), fillvalue=''))
+            rows = new_rows
+
         for r in rows:
             self.append_row(r)
     
@@ -88,3 +100,4 @@ class Table(object):
             out = '\\hline\n' + out + '\\hline\n'
         return '\\begin{tabular}{*{%d}{l}}\n%s\\end{tabular}' % \
                         (max(row.column_count() for row in self.rows), out)
+
