@@ -1,7 +1,10 @@
 import sys
 PY3 = sys.version_info[0] >= 3
 
-from itertools import izip_longest
+try:
+    from itertools import zip_longest  # Python 3
+except ImportError:
+    from itertools import izip_longest as zip_longest  # Python 2
 from collections import Mapping
 
 class TableCell(object):
@@ -79,7 +82,7 @@ class Table(object):
         if (len(rows) == 1) and isinstance(rows[0], Mapping):
             dict_arg = rows[0]
             new_rows = [TableHeaderRow(*dict_arg.keys())]
-            new_rows.extend(izip_longest(*dict_arg.values(), fillvalue=''))
+            new_rows.extend(zip_longest(*dict_arg.values(), fillvalue=''))
             rows = new_rows
 
         for r in rows:
