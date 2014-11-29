@@ -9,12 +9,8 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='ipytables',
-
-    # Versions should comply with PEP440.  For a discussion on single-sourcing
-    # the version across setup.py and the project code, see
-    # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.1.0',
+    name='Tabipy',
+    version='0.1',
 
     description='Construct tables for rich display in IPython.',
     long_description=long_description,
@@ -60,9 +56,7 @@ setup(
     # What does your project relate to?
     keywords='table ipython notebook latex',
 
-    # You can just specify the packages manually here if your project is
-    # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['docs']),
+    py_modules=['tabipy'],
 
 #    # List run-time dependencies here.  These will be installed by pip when your
 #    # project is installed. For an analysis of "install_requires" vs pip's
