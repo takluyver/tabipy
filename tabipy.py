@@ -33,7 +33,11 @@ class TableCell(object):
         return "<%s %s>%s</%s>"% (tag, ' '.join(attrs), self.value, tag)
 
     def _repr_latex_(self):
-        return (str if PY3 else unicode)(self.value)
+        out = (str if PY3 else unicode)(self.value)
+        if self.header:
+            return u"\\bf " + out
+        else:
+            return out
 
 class TableHeader(TableCell):
     def __init__(self, value, **kwargs):

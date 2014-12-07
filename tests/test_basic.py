@@ -22,3 +22,6 @@ def test_tableheader():
 
     html = t._repr_html_()
     assert html.count('<th') == 6
+
+    latex = t._repr_latex()
+    assert latex.count(r'\bf') == 3
