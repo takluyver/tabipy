@@ -34,7 +34,14 @@ class TableCell(object):
 
     def _repr_latex_(self):
         return (str if PY3 else unicode)(self.value)
-    
+
+class TableHeader(TableCell):
+    def __init__(self, value, **kwargs):
+       # header of a TableHeader is always True
+       if 'header' in kwargs:
+           del kwargs['header']
+       super(TableHeader, self).__init__(value, header=True, **kwargs)
+
 class TableRow(object):
     def  __init__(self, *cells):
         self.parent = None
