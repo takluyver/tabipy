@@ -222,7 +222,6 @@ class Table(object):
             rows = new_rows
         max_len = None
         for index, r in enumerate(rows):
-#             print(max_len)
             self.append_row(r, max_len)
             if index==0:
                 max_len = self.rows[0].column_count()
@@ -235,6 +234,7 @@ class Table(object):
         row, column = address
         Row = self.rows[row]
         cell = Row.cells[column]
+
         if len(kwargs)>0:
             for key, value in kwargs.items():
                 if key in ['col_span']:
