@@ -33,7 +33,6 @@ class TableCell(object):
         self.bg_colour = bg_colour
         self.text_colour = text_colour
         self.col_span = col_span
-
         # initialize regex for escaping to latex code
         if self._latex_escape_re is None:
             self._latex_escape_re = re.compile('|'.join(map(re.escape, 
@@ -43,6 +42,14 @@ class TableCell(object):
     def _latex_escape_func(self, match): 
         """Replace regex match with latex equivalent"""
         return self._latex_escape_table[match.group()]
+        
+    def __repr__(self):
+        text = "value = {},\n".format(self.value)
+        text += "header = {},\n".format(self.header)
+        text += "bg_colour = {},\n".format(self.bg_colour)
+        text += "text_colour = {},\n".format(self.text_colour)
+        text += "col_span = {},\n".format(self.col_span)
+        return text
     
     def _make_css(self):
         rules = []
@@ -220,6 +227,21 @@ class Table(object):
             if index==0:
                 max_len = self.rows[0].column_count()
             
+    def cell(self, address, **kwargs):
+        """Allows for direct addressing of individual cells (row, column)
+
+        Any value not entered will remain unchanged.
+        Address is (row, column) with an origin index of 1."""
+        row, column = address
+        Row = self.rows[row-1]
+        cell = Row.cells[column-1]
+        if len(kwargs)>0:
+            for key, value in kwargs.items():
+                if key in ['col_span']:
+                    key = '_' + key
+                cell.__dict__[key] = value                
+        else:
+            print(cell.__repr__())
     
     def append_row(self, r, max_len=None):
         if not isinstance(r, TableRow):
