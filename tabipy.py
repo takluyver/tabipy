@@ -30,7 +30,7 @@ class TableCell(object):
         "validate the span value"
         val = int(val)
         if val<1:
-            er = "Row and columns spand must be greatter or equal to 1"
+            er = "Row and columns spand must be greater or equal to 1"
             raise(ValueError(er))
         return val
     
@@ -78,7 +78,7 @@ class TableRow(object):
             
     @property
     def _current(self):
-        ("This provides column information for the current row")
+        "This provides column information for the current row"
         count = 0
         current = []
         for index, c in enumerate(self.cells):
