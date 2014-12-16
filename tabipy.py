@@ -1,3 +1,7 @@
+# name: tabipy.py
+# type: application/x-python
+# size: 5911 bytes 
+# ---- 
 import sys
 PY3 = sys.version_info[0] >= 3
 
@@ -27,7 +31,7 @@ class TableCell(object):
         return '; '.join(rules)
         
     def _check_span(self,val):
-        "validate the span value"
+        "Validate the span value."
         val = int(val)
         if val<1:
             er = "Row and columns spand must be greater or equal to 1"
@@ -70,11 +74,17 @@ class TableHeader(TableCell):
        super(TableHeader, self).__init__(value, header=True, **kwargs)
 
 class TableRow(object):
-    def  __init__(self, *cells):
+    def  __init__(self, *cells, max_len=None):
         self.parent = None
+        self.max_len = max_len
         self.cells = []
         for c in cells:
             self.append_cell(c)
+        if self.max_len is not None:
+            cur_len = self.column_count()
+            if cur_len < self.max_len:
+                for c in range(self.max_len - cur_len):
+                    self.append_cell('')
             
     @property
     def _current(self):
@@ -95,11 +105,28 @@ class TableRow(object):
     def append_cell(self, c):
         if not isinstance(c, TableCell):
             c = TableCell(c)
-        self.cells.append(c)
+        if c.col_span>1:
+            self.cells.append(c)
+            index = self.column_count()
+            blanks = c.col_span -1
+            if self.max_len is not None:
+                m_l = self.max_len
+                new_len = index + blanks
+                count = m_l - index if new_len > self.max_len else blanks
+            else:
+                count = blanks
+            for blank in range(count):
+                self.cells.append(TableCell(''))
+        else:
+            self.cells.append(c)
 
-    def column_count(self):
+    def column_count(self, debug=False):
         count = 0
         for index, c in enumerate(self.cells):
+            if debug:
+                print('index = {}, value = "{}", col_span = {}'.format(index,
+                                                                     c.value,
+                                                                     c.col_span))
             if index == count:
                 count += c.col_span
         return count
@@ -160,13 +187,17 @@ class Table(object):
             new_rows = [TableHeaderRow(*dict_arg.keys())]
             new_rows.extend(zip_longest(*dict_arg.values(), fillvalue=''))
             rows = new_rows
-
-        for r in rows:
-            self.append_row(r)
+        max_len = None
+        for index, r in enumerate(rows):
+#             print(max_len)
+            self.append_row(r, max_len)
+            if index==0:
+                max_len = self.rows[0].column_count()
+            
     
-    def append_row(self, r):
+    def append_row(self, r, max_len=None):
         if not isinstance(r, TableRow):
-            r = TableRow(*r)
+            r = TableRow(*r, max_len=max_len)
         r.set_parent(self)
         self.rows.append(r)
     
@@ -179,4 +210,3 @@ class Table(object):
             out = '\\hline\n' + out + '\\hline\n'
         return '\\begin{tabular}{*{%d}{l}}\n%s\\end{tabular}' % \
                         (self.rows[0].column_count(), out)
-
