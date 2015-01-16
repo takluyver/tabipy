@@ -1,3 +1,4 @@
+import re
 import sys
 PY3 = sys.version_info[0] >= 3
 
@@ -9,12 +10,30 @@ from collections import Mapping
 
 class TableCell(object):
     bg_colour = None
+    _latex_escape_table = {'&': r'\&',
+                           '\\': r'{\textbackslash}',
+                           '~': r'{\textasciitilde}',
+                           '$': '\$',
+                           '\n': r'{\linebreak}',
+                           '\r': r'{\linebreak}',
+                           '\r\n': r'{\linebreak}',
+                           '_': r'\_',
+                           '{': '\{',
+                           '}': '\}'}
+    _latex_escape_re = None
+    _latex_escape_func = None
     
     def __init__(self, value, header=False, bg_colour=None, text_colour=None):
         self.value = value
         self.header = header
         self.bg_colour = bg_colour
         self.text_colour = text_colour
+
+        # initialize regex for escaping to latex code
+        if self._latex_escape_re is None:
+            self._latex_escape_re = re.compile('|'.join(map(re.escape, 
+                                                    self._latex_escape_table)))
+            self._latex_escape_func = lambda m: self._latex_escape_table[m.group()]
     
     def _make_css(self):
         rules = []
@@ -34,6 +53,7 @@ class TableCell(object):
 
     def _repr_latex_(self):
         out = (str if PY3 else unicode)(self.value)
+        out = self._latex_escape_re.sub(self._latex_escape_func, out)
         if self.header:
             return u"\\bf " + out
         else:

@@ -25,3 +25,25 @@ def test_tableheader():
 
     latex = t._repr_latex_()
     assert latex.count(r'\bf') == 3
+
+def test_escape():
+    inp_expected = (('', ''),
+                    ('&', r'\&'),
+                    ('\\', r'{\textbackslash}'),
+                    ('~', r'{\textasciitilde}'),
+                    ('$', '\$'),
+                    ('\n', r'{\linebreak}'),
+                    ('\r', r'{\linebreak}'),
+                    ('\r\n', r'{\linebreak}'),
+                    ('_', r'\_'),
+                    ('{', '\{'),
+                    ('}', '\}'),
+                    ('body & mind & r&d', r'body \& mind \& r\&d'),
+                    (r'\_/~\_/', 
+                     r'{\textbackslash}\_/{\textasciitilde}'
+                     r'{\textbackslash}\_/'),
+                    ('~_$\r\n{}', 
+                     r'{\textasciitilde}\_\${\linebreak}\{\}'))
+    for inp, expected in inp_expected:
+        cell = TableCell(inp)
+        assert cell._repr_latex_() == expected
