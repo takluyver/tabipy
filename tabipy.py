@@ -6,20 +6,20 @@ try:
     from itertools import zip_longest  # Python 3
 except ImportError:
     from itertools import izip_longest as zip_longest  # Python 2
-from collections import Mapping
+from collections import Mapping, OrderedDict
 
 class TableCell(object):
     bg_colour = None
-    _latex_escape_table = {'&': r'\&',
-                           '\\': r'{\textbackslash}',
-                           '~': r'{\textasciitilde}',
-                           '$': '\$',
-                           '\n': r'{\linebreak}',
-                           '\r': r'{\linebreak}',
-                           '\r\n': r'{\linebreak}',
-                           '_': r'\_',
-                           '{': '\{',
-                           '}': '\}'}
+    _latex_escape_table = OrderedDict((('&', r'\&'),
+                                       ('\\', r'{\textbackslash}'),
+                                       ('~', r'{\textasciitilde}'),
+                                       ('$', '\$'),
+                                       ('\r\n', r'{\linebreak}'),
+                                       ('\n', r'{\linebreak}'),
+                                       ('\r', r'{\linebreak}'),
+                                       ('_', r'\_'),
+                                       ('{', '\{'),
+                                       ('}', '\}')))
     _latex_escape_re = None
     _latex_escape_func = None
     
@@ -33,7 +33,10 @@ class TableCell(object):
         if self._latex_escape_re is None:
             self._latex_escape_re = re.compile('|'.join(map(re.escape, 
                                                     self._latex_escape_table)))
-            self._latex_escape_func = lambda m: self._latex_escape_table[m.group()]
+
+    def _latex_escape_func(self, match): 
+        """Replace regex match with latex equivalent"""
+        return self._latex_escape_table[match.group()]
     
     def _make_css(self):
         rules = []
