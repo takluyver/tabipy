@@ -1,3 +1,7 @@
+#name: tabipy.py
+#type: text/x-python
+#size: 8195 bytes 
+#---- 
 import re
 import sys
 PY3 = sys.version_info[0] >= 3
@@ -96,9 +100,9 @@ class TableHeader(TableCell):
        super(TableHeader, self).__init__(value, header=True, **kwargs)
 
 class TableRow(object):
-    def  __init__(self, *cells, max_len=None):
+    def  __init__(self, *cells, **kwargs):
         self.parent = None
-        self.max_len = max_len
+        self.max_len = kwargs.get("max_len",None)
         self.cells = []
         for c in cells:
             self.append_cell(c)
