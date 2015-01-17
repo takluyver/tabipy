@@ -81,7 +81,10 @@ class TableCell(object):
         # the bolf flag must only be next to the value of the cell not outside
         # of the multicolumn flag
         out = u"\\bf " + out if self.header else out
-        text = "\multicolumn{%d}{l}{%s}"%(self.col_span, out)
+        if self.col_span>1:
+            text = "\multicolumn{%d}{l}{%s}"%(self.col_span, out)
+        else:
+            text = out
         return text
 
 class TableHeader(TableCell):

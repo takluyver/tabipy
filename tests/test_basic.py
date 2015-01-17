@@ -47,7 +47,11 @@ def test_escape():
                      r'{\textasciitilde}\_\${\linebreak}\{\}'))
     for inp, expected in inp_expected:
         cell = TableCell(inp)
-        assert cell._repr_latex_() == expected
+        try:
+            assert cell._repr_latex_() == expected
+        except:
+            print((inp, expected, cell._repr_latex_()))
+            assert cell._repr_latex_() == expected
 
 def col_span_table():
     "Returns the table used in the col_span tests"
