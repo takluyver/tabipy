@@ -1,7 +1,4 @@
-# name: tabipy.py
-# type: application/x-python
-# size: 5911 bytes 
-# ---- 
+import re
 import sys
 PY3 = sys.version_info[0] >= 3
 
@@ -9,10 +6,22 @@ try:
     from itertools import zip_longest  # Python 3
 except ImportError:
     from itertools import izip_longest as zip_longest  # Python 2
-from collections import Mapping
+from collections import Mapping, OrderedDict
 
 class TableCell(object):
     bg_colour = None
+    _latex_escape_table = OrderedDict((('&', r'\&'),
+                                       ('\\', r'{\textbackslash}'),
+                                       ('~', r'{\textasciitilde}'),
+                                       ('$', '\$'),
+                                       ('\r\n', r'{\linebreak}'),
+                                       ('\n', r'{\linebreak}'),
+                                       ('\r', r'{\linebreak}'),
+                                       ('_', r'\_'),
+                                       ('{', '\{'),
+                                       ('}', '\}')))
+    _latex_escape_re = None
+    _latex_escape_func = None
     
     def __init__(self, value, header=False, bg_colour=None, text_colour=None,
                  col_span=1):
@@ -21,6 +30,15 @@ class TableCell(object):
         self.bg_colour = bg_colour
         self.text_colour = text_colour
         self.col_span = col_span
+
+        # initialize regex for escaping to latex code
+        if self._latex_escape_re is None:
+            self._latex_escape_re = re.compile('|'.join(map(re.escape, 
+                                                    self._latex_escape_table)))
+
+    def _latex_escape_func(self, match): 
+        """Replace regex match with latex equivalent"""
+        return self._latex_escape_table[match.group()]
     
     def _make_css(self):
         rules = []
@@ -204,7 +222,7 @@ class Table(object):
     def _repr_html_(self):
         return '<table>\n' + '\n'.join(r._repr_html_() for r in self.rows) + '\n</table>'
 
-    def _repr_latex_(self):   
+    def _repr_latex_(self):
         out = '\n'.join(r._repr_latex_() for r in self.rows)
         if self.has_header:
             out = '\\hline\n' + out + '\\hline\n'

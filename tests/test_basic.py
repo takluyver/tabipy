@@ -1,4 +1,4 @@
-from tabipy import Table, TableRow, TableCell, TableHeaderRow
+from tabipy import Table, TableRow, TableCell, TableHeaderRow, TableHeader
 import re
 
 def test_simple():
@@ -15,6 +15,39 @@ def test_simple():
     
     latex = t._repr_latex_()
     assert r'\hline' in latex
+
+def test_tableheader():
+    t = Table((TableHeader('a'), 1, 2),
+              (TableHeader('b'), 3, 4),
+              (TableHeader('c'), 5, 6))
+
+    html = t._repr_html_()
+    assert html.count('<th') == 3
+
+    latex = t._repr_latex_()
+    assert latex.count(r'\bf') == 3
+
+def test_escape():
+    inp_expected = (('', ''),
+                    ('&', r'\&'),
+                    ('\\', r'{\textbackslash}'),
+                    ('~', r'{\textasciitilde}'),
+                    ('$', '\$'),
+                    ('\n', r'{\linebreak}'),
+                    ('\r', r'{\linebreak}'),
+                    ('\r\n', r'{\linebreak}'),
+                    ('_', r'\_'),
+                    ('{', '\{'),
+                    ('}', '\}'),
+                    ('body & mind & r&d', r'body \& mind \& r\&d'),
+                    (r'\_/~\_/', 
+                     r'{\textbackslash}\_/{\textasciitilde}'
+                     r'{\textbackslash}\_/'),
+                    ('~_$\r\n{}', 
+                     r'{\textasciitilde}\_\${\linebreak}\{\}'))
+    for inp, expected in inp_expected:
+        cell = TableCell(inp)
+        assert cell._repr_latex_() == expected
 
 def col_span_table():
     "Returns the table used in the col_span tests"
