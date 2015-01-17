@@ -78,6 +78,7 @@ class TableCell(object):
 
     def _repr_latex_(self):
         out = (str if PY3 else unicode)(self.value)
+        out = self._latex_escape_re.sub(self._latex_escape_func, out)
         # the bolf flag must only be next to the value of the cell not outside
         # of the multicolumn flag
         out = u"\\bf " + out if self.header else out
