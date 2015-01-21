@@ -10,22 +10,21 @@ try:
     from itertools import zip_longest  # Python 3
 except ImportError:
     from itertools import izip_longest as zip_longest  # Python 2
-from collections import Mapping, OrderedDict
+from collections import Mapping
 
 class TableCell(object):
     bg_colour = None
-    _latex_escape_table = OrderedDict((('&', r'\&'),
-                                       ('\\', r'{\textbackslash}'),
-                                       ('~', r'{\textasciitilde}'),
-                                       ('$', '\$'),
-                                       ('\r\n', r'{\linebreak}'),
-                                       ('\n', r'{\linebreak}'),
-                                       ('\r', r'{\linebreak}'),
-                                       ('_', r'\_'),
-                                       ('{', '\{'),
-                                       ('}', '\}')))
+    _latex_escape_table = {'&': r'\&',
+                           '\\': r'{\textbackslash}',
+                           '~': r'{\textasciitilde}',
+                           '$': '\$',
+                           '\r\n': r'{\linebreak}',
+                           '\n': r'{\linebreak}',
+                           '\r': r'{\linebreak}',
+                           '_': r'\_',
+                           '{': '\{',
+                           '}': '\}'}
     _latex_escape_re = None
-    _latex_escape_func = None
     
     def __init__(self, value, header=False, bg_colour=None, text_colour=None,
                  col_span=1):
@@ -38,7 +37,8 @@ class TableCell(object):
         # initialize regex for escaping to latex code
         if self._latex_escape_re is None:
             self._latex_escape_re = re.compile('|'.join(map(re.escape, 
-                                                    self._latex_escape_table)))
+                                        sorted(self._latex_escape_table.keys(),
+                                               key=len, reverse=True))))
 
     def _latex_escape_func(self, match): 
         """Replace regex match with latex equivalent"""
