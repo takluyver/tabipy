@@ -48,3 +48,5 @@ def test_escape():
     for inp, expected in inp_expected:
         cell = TableCell(inp)
         assert cell._repr_latex_() == expected
+
+
