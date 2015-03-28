@@ -116,13 +116,12 @@ def _actual_col_span_latex(t):
 def cell_method_col_span_table():
     "Returns a table modified to test col_span using the cell method"
     t = default_table()
-    t .cell((1,1), col_span = 2)
+    t.cell(0, 0).col_span = 2
     return t
     
 def test_cell_method_col_span_html():
     "This tests that col_span works in html"
     t = cell_method_col_span_table()
-    #actual_col_span_html(t)
     t1_html = t._repr_html_()
     row_split = re.compile('<\s*tr\s*>')
     lines = row_split.split(t1_html)
@@ -132,10 +131,9 @@ def test_cell_method_col_span_html():
     cl_check = re.compile('colspan\s*=\s*"\s*2\s*"')
     assert len(cl_check.findall(parts[0]))>0
     
-def test_cell_method_col_span_html():
+def test_cell_method_col_span_latex():
     "This tests that col_span works in latex"
     t = cell_method_col_span_table()
-    #actual_col_span_latex(t)
     t1_latex = t._repr_latex_()
     row_split = re.compile(r'\\\\')
     lines = row_split.split(t1_latex)
