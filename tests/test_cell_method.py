@@ -13,7 +13,7 @@ def t():
     
 def test_cell_method_col_span_html():
     "This tests that col_span works in html"
-    t = cell_method_col_span_table()
+    t = t()
     t1_html = t._repr_html_()
     row_split = re.compile('<\s*tr\s*>')
     lines = row_split.split(t1_html)
@@ -25,7 +25,7 @@ def test_cell_method_col_span_html():
     
 def test_cell_method_col_span_html():
     "This tests that col_span works in latex"
-    t = cell_method_col_span_table()
+    t = t()
     t1_latex = t._repr_latex_()
     row_split = re.compile(r'\\\\')
     lines = row_split.split(t1_latex)
