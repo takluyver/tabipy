@@ -231,17 +231,17 @@ class Table(object):
         """Allows for direct addressing of individual cells (row, column)
 
         Any value not entered will remain unchanged.
-        Address is (row, column) with an origin index of 1."""
+        Address is (row, column) with an origin index of 0."""
         row, column = address
-        Row = self.rows[row-1]
-        cell = Row.cells[column-1]
+        Row = self.rows[row]
+        cell = Row.cells[column]
         if len(kwargs)>0:
             for key, value in kwargs.items():
                 if key in ['col_span']:
                     key = '_' + key
                 cell.__dict__[key] = value                
         else:
-            print(cell.__repr__())
+            return cell
     
     def append_row(self, r, max_len=None):
         if not isinstance(r, TableRow):
