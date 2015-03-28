@@ -8,7 +8,7 @@ def t():
     t = Table((1,2,3),
               (4,5,6),
               (7,8,9))
-    t .cell((1,1), col_span = 2)
+    t .cell((0,0), col_span = 2)
     return t
     
 def test_cell_method_col_span_html():
