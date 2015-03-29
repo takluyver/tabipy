@@ -257,7 +257,7 @@ class TableRow(object):
                     _cell._col_span = tmp
                     _cell._supress = False
                     index += a_col
-        latex += '\\\\\n'
+        latex += '\\\\'#\n'
         return latex
 
 class TableHeaderRow(TableRow):
@@ -271,7 +271,7 @@ class TableHeaderRow(TableRow):
         self.parent.has_header = True
 
     def _repr_latex_(self):
-        return super(TableHeaderRow, self)._repr_latex_() + '\\hline\n'
+        return super(TableHeaderRow, self)._repr_latex_() + '\\\nhline'
 
 class Table(object):
     def __init__(self, *rows):
