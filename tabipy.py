@@ -32,7 +32,7 @@ class TableCell(object):
         self.text_colour = text_colour
         self.row_span = row_span
         self.col_span = col_span
-        self._supress = False
+        self._suppress = False
         # initialize regex for escaping to latex code
         if self._latex_escape_re is None:
             self._latex_escape_re = re.compile('|'.join(map(re.escape, 
@@ -115,7 +115,7 @@ class TableCell(object):
         out = self._latex_escape_re.sub(self._latex_escape_func, out)
         # the bolf flag must only be next to the value of the cell not outside
         # of the multicolumn flag
-        if self._supress: # For hiding cell content when using multicolumn
+        if self._suppress: # For hiding cell content when using multicolumn
             out = ''
         elif self.header:
             out = u"\\bf " + out
@@ -249,13 +249,13 @@ class TableRow(object):
                     index += c_col
                 else:
                     # For cells not being rendered, their status need to be  
-                    # temporarily changed to supress output and reflec the 
+                    # temporarily changed to suppress output and reflec the 
                     # previous row's column span.
-                    _cell._supress = True
+                    _cell._suppress = True
                     tmp, _cell._col_span = _cell._col_span, a_col
                     latex += _cell._repr_latex_()
                     _cell._col_span = tmp
-                    _cell._supress = False
+                    _cell._suppress = False
                     index += a_col
         latex += '\\\\'#\n'
         return latex
