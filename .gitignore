@@ -7,3 +7,5 @@ MANIFEST
 Link*
 *.*~
 Dev*.*
+/tests/Dev*
+/tests/tabipy.*
