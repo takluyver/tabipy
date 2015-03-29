@@ -3,14 +3,6 @@ __pycache__/
 *.pyc
 MANIFEST
 /build/
-/dist/
-
-# Backup Files #
-################
+/dist
+Link*
 *.*~
-*.orig
-*.bak
-
-# LaTex Build Files #
-#####################
-*.swp
